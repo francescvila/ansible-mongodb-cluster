@@ -1,0 +1,124 @@
+- name: Create data volume directory
+  file:
+    path: "{{ data_path }}"
+    owner: root
+    group: root
+    state: directory
+    mode: '0755'
+
+- name: Create MongoDB volume directory
+  file:
+    path: "{{ data_path }}/mongodb"
+    owner: root
+    group: root
+    state: directory
+    mode: '0755'
+
+- name: Create MongoDB data volume directory
+  file:
+    path: "{{ data_path }}/mongodb/data"
+    owner: root
+    group: root
+    state: directory
+    mode: '0755'
+
+- name: Create MongoDB data ssl volume directory
+  file:
+    path: "{{ data_path }}/mongodb/ssl"
+    owner: root
+    group: root
+    state: directory
+    mode: '0755'
+
+- name: Copy init files into MongoDB ssl directory
+  copy:
+    src: "files/ssl/{{ item }}"
+    dest: "{{ data_path }}/mongodb/ssl/{{ item }}"
+    owner: '999'
+    group: '999'
+    mode: '0400'
+  with_items:
+    - mongo-repl.key
+  notify:
+    - Restart docker-compose
+
+- name: Create MongoDB data scripts volume directory
+  file:
+    path: "{{ data_path }}/mongodb/scripts"
+    owner: root
+    group: root
+    state: directory
+    mode: '0755'
+
+- name: Copy init files into MongoDB scripts directory
+  copy:
+    src: "files/scripts/{{ item}}"
+    dest: "{{ data_path }}/mongodb/scripts/{{ item}}"
+    owner: root
+    group: root
+    mode: '0755'
+  with_items:
+    - rs-init.sh
+    - mongo-init.sh
+    - rs-reconfig.sh
+
+- name: Create MongoDB data db volume directory
+  file:
+    path: "{{ data_path }}/mongodb/data/db"
+    owner: root
+    group: root
+    state: directory
+    mode: '0755'
+
+- name: Create MongoDB dumps volume directory
+  file:
+    path: "{{ data_path }}/mongodb/dumps"
+    owner: root
+    group: root
+    state: directory
+    mode: '0755'
+
+- name: Create MongoDB logs volume directory
+  file:
+    path: "{{ data_path }}/mongodb/logs"
+    owner: '999'
+    group: '999'
+    state: directory
+    mode: '0755'
+
+- name: Generate MongoDB logrotate config
+  template:
+    src: "../templates/logrotate/mongodb.j2"
+    dest: "/etc/logrotate.d/mongodb"
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Create init directory
+  file:
+    path: "{{ init_path }}"
+    owner: root
+    group: root
+    state: directory
+    mode: '0755'
+
+- name: Generate docker-compose .env file
+  template:
+    src: "../templates/docker/.env.j2"
+    dest: "{{ init_path }}/.env"
+    owner: root
+    group: root
+    mode: '0644'
+    force: no
+  notify:
+    - Restart docker-compose
+
+- name: Docker-compose generation
+  template:
+    src: "../templates/docker/docker-compose.yml.j2"
+    dest: "{{ init_path }}/docker-compose.yml"
+    owner: root
+    group: root
+    mode: '0644'
+  notify:
+    - Restart docker-compose

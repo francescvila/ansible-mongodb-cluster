@@ -1,0 +1,14 @@
+# Provision servers
+- hosts: all
+  #user: ansible
+  become: yes
+  gather_facts: yes
+  roles:
+    - common
+
+- hosts: mongodb
+  #user: ansible
+  become: yes
+  gather_facts: yes
+  roles:
+  - role: mongodb

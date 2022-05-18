@@ -1,0 +1,11 @@
+# MongoDB
+{{ data_path }}/mongodb/logs/*.log {
+    daily
+    missingok
+    rotate 14
+    compress
+    notifempty
+    create 644 root root 
+    sharedscripts
+    copytruncate
+}

@@ -1,0 +1,29 @@
+version: '3.0'
+
+services:
+
+  mongodb:
+    container_name: mongodb
+    image: mongo:${MONGO_DOCKER_TAG}
+    environment:
+      TZ: "Europe/Brussels"
+      MONGO_INITDB_ROOT_USERNAME: {{ mongo_root_username }}
+      MONGO_INITDB_ROOT_PASSWORD: {{ mongo_root_password }}
+      MONGO_INITDB_APP_DATABASE: {{ mongo_app_database }}
+      MONGO_INITDB_APP_USERNAME: {{ mongo_app_username }}
+      MONGO_INITDB_APP_PASSWORD: {{ mongo_app_password }}
+      MONGO_REPLICASET_NAME: {{ mongo_replicaset_name }}
+      MONGO_HOST_NODE1: {{ hostvars['mongo1'].ansible_host }}
+      MONGO_HOST_NODE2: {{ hostvars['mongo2'].ansible_host }}
+      MONGO_HOST_NODE3: {{ hostvars['mongo3'].ansible_host }}
+    volumes:
+    - "{{ data_path }}/mongodb/scripts:/scripts:rw"
+    - "{{ data_path }}/mongodb/ssl:/etc/mongodb/ssl:ro"
+    - "{{ data_path }}/mongodb/data/db:/data/db:rw"
+    - "{{ data_path }}/mongodb/logs:/var/log/mongodb:rw"
+    - "{{ data_path }}/mongodb/dumps:/data/dumps:rw"
+    ports:
+    - 27017:27017/tcp
+    restart: always
+    entrypoint: ["/usr/bin/mongod", "--bind_ip_all", "--auth", "--keyFile", "{{ mongo_keyfile }}", "--replSet", "{{ mongo_replicaset_name }}", "--logpath", "{{ mongo_logpath }}"]
+    #command: ["--keyFile", "{{ mongo_keyfile }}", "--replSet", "{{ mongo_replicaset_name }}", "--logpath", "{{ mongo_logpath }}"]

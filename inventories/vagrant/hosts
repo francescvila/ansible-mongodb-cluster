@@ -1,0 +1,22 @@
+#
+# All preproduction servers servers
+#
+
+[all:children]
+mongodb
+
+#
+# Servers
+#
+
+[mongodb]
+mongo1 ansible_host=192.168.60.41 node=1
+mongo2 ansible_host=192.168.60.42 node=2
+mongo3 ansible_host=192.168.60.43 node=3
+
+#
+# Framework-specific
+#
+
+[docker:children]
+mongodb

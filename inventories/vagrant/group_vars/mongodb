@@ -1,0 +1,9 @@
+# MongoDB credentials
+mongo_root_username: admin
+mongo_root_password: 4dM1nP4ss
+mongo_app_database: appdb
+mongo_app_username: appusr
+mongo_app_password: 4ppC1srP4ss
+mongo_replicaset_name: dbrs
+mongo_keyfile: /etc/mongodb/ssl/mongo-repl.key
+mongo_logpath: /var/log/mongodb/mongod.log
